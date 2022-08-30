@@ -1,0 +1,6 @@
+# Keep alphabetized.
+fastapi==0.79.1
+hypercorn==0.13.2
+psycopg2==2.9.3
+sqlalchemy==1.4.40
+uvloop==0.16.0
