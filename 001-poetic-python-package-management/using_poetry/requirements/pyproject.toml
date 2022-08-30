@@ -1,0 +1,30 @@
+[tool.poetry]
+authors = [
+    "Randy J <randy@astruct.co>",
+]
+description = "Simple example of using poetry to create a separate dev image in Docker."
+name = "poetry-example"
+version = "0.1.0"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = [
+    "poetry-core>=1.0.0",
+]
+
+# Keep each group alphabetized.
+
+[tool.poetry.dependencies]
+fastapi = "0.79.1"
+hypercorn = "0.13.2"
+psycopg2 = "2.9.3"
+python = "^3.10"
+sqlalchemy = "1.4.40"
+uvloop = "0.16.0"
+
+
+[tool.poetry.dev-dependencies]
+isort = "5.10.1"
+mypy = "0.971"
+pylint = "2.14.5"
+pytest = "7.1.2"

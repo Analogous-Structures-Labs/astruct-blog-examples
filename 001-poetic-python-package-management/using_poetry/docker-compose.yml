@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      target: app
+    ports:
+      - ${APP_PORT:-8080}:80
+    volumes:
+      - src:${APP_DIR:-/app}/src
+  devapp:
+    build:
+      context: .
+      target: devapp
+    ports:
+      - ${APP_PORT:-8080}:80
+    volumes:
+      - src:${APP_DIR:-/app}/src
+
+volumes:
+  src:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./src

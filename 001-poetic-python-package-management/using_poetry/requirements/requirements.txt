@@ -1,0 +1,4 @@
+# This file only exists to install packages needed to bootstrap before handing things off to poetry.
+# All other packages should be added to pyproject.toml in this same directory.
+# Keep alphabetized.
+poetry==1.2.0rc2
