@@ -24,12 +24,13 @@ ARG HTTP_PORT
 ENV \
     HTTP_PORT=$HTTP_PORT \
     BIND_ADDRESS=0.0.0.0:$HTTP_PORT \
+    # We have to set this as poetry doesn't have a equivalent passthrough argument.
     PIP_COMPILE=0
 
-WORKDIR /root
+WORKDIR /tmp
 
 # Install pip managed dependenices.
-COPY requirements/requirements.txt ./requirements.txt
+COPY requirements/requirements.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
     build-base \
@@ -38,17 +39,18 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     pip install --no-cache --no-compile --no-input -r requirements.txt && \
     # Remove build dependencies.
     apk del --purge build-dependencies && \
-    rm requirements.txt
+    rm requirements.txt && \
+    # Configure poetry.
+    poetry config virtualenvs.create false
 
 # Install poetry managed dependencies.
-COPY requirements/pyproject.toml ./pyproject.toml
+COPY requirements/pyproject.toml pyproject.toml
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
     build-base \
     # Build dependencies required by specific python packages.
     postgresql-dev \
     && \
-    poetry config virtualenvs.create false && \
     poetry install --no-cache --no-interaction --without dev && \
     apk del --purge build-dependencies
 
@@ -80,15 +82,13 @@ ENV \
     # Prevent python from writing bytecode during development.
     PYTHONDONTWRITEBYTECODE=1
 
-WORKDIR /root
+WORKDIR /tmp
 
 # Install poetry DEV managed dependencies.
-COPY requirements/pyproject.toml ./pyproject.toml
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
     build-base \
     && \
-    poetry config virtualenvs.create false && \
     poetry install --no-cache --no-interaction --only dev && \
     # Remove build dependencies.
     apk del --purge build-dependencies

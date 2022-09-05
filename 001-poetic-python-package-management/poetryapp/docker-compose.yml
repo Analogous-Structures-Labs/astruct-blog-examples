@@ -8,7 +8,7 @@ services:
     ports:
       - ${APP_PORT:-8080}:80
     volumes:
-      - src:${APP_DIR:-/app}/src
+      - ./src:${APP_DIR:-/app}/src
   devapp:
     build:
       context: .
@@ -16,12 +16,4 @@ services:
     ports:
       - ${APP_PORT:-8080}:80
     volumes:
-      - src:${APP_DIR:-/app}/src
-
-volumes:
-  src:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./src
+      - ./src:${APP_DIR:-/app}/src

@@ -2,6 +2,7 @@
 ARG APP_DIR=/app
 ARG HTTP_PORT=80
 
+# Alias our base image so we don't have to repeat the version number.
 FROM python:3.10.6-alpine3.16 AS python
 
 ENV \
@@ -22,13 +23,12 @@ ARG HTTP_PORT
 
 ENV \
     HTTP_PORT=$HTTP_PORT \
-    BIND_ADDRESS=0.0.0.0:$HTTP_PORT \
-    PIP_COMPILE=0
+    BIND_ADDRESS=0.0.0.0:$HTTP_PORT
 
-WORKDIR /root
+WORKDIR /tmp
 
 # Install pip managed dependenices.
-COPY requirements/requirements.txt ./requirements.txt
+COPY requirements/requirements.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
     build-base \
@@ -69,10 +69,8 @@ ENV \
     # Prevent python from writing bytecode during development.
     PYTHONDONTWRITEBYTECODE=1
 
-WORKDIR /root
-
 # Install pip managed DEV dependenices.
-COPY requirements/requirements.dev.txt ./requirements.txt
+COPY requirements/requirements.dev.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
     build-base \
