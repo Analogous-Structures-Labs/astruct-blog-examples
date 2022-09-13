@@ -1,6 +1,9 @@
 name: Fetch embedded code snippets in markdown files and embed them.
 
 on:
+  push:
+    branches:
+      - blog/*
   pull_request:
     branches:
       - main
