@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
 
-      - uses: Analogous-Structures-Labs/markdown-embed-code@main
+      - uses: Analogous-Structures-Labs/markdown-embed-code@fix
         with:
           markdown: "*.md"
           token: ${{ secrets.GITHUB_TOKEN }}
