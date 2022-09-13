@@ -16,9 +16,9 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-          ref: refs/heads/${{ github.head_ref }}
+          ref: ${{ github.head_ref }}
 
-      - uses: tdabasinskas/markdown-embed-code@fork
+      - uses: Analogous-Structures-Labs/markdown-embed-code@main
         with:
           markdown: "*.md"
           token: ${{ secrets.GITHUB_TOKEN }}
