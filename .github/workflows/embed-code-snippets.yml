@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - blog/*
-  pull_request:
-    branches:
-      - main
 
 jobs:
   embed-code-snippets:
