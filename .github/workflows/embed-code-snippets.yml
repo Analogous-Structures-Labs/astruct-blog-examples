@@ -17,7 +17,7 @@ jobs:
 
       - uses: Analogous-Structures-Labs/markdown-embed-code@fix
         with:
-          markdown: "\\**\\*.md"
+          markdown: "**/*.md"
           token: ${{ secrets.GITHUB_TOKEN }}
           message: "Embed code snippets."
           silent: true
