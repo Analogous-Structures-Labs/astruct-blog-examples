@@ -83,7 +83,7 @@ Typically, we've handled this for Python projects by having 2 different requirem
 We generally use Docker for client-server scenarios, especially web. Bellow is an example of how we would handle separate images for dev and production and selectively installing dev dependencies:
 
 
-```dockerfile:./pipapp/Dockerfile
+```dockerfile:001-poetic-python-package-management/pipapp/Dockerfile
 
 ```
 ## Beyond
