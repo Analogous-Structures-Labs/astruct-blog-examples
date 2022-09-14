@@ -45,7 +45,7 @@ These formats are used even if your project will never be distributed. They solv
 
 Having taught many old tricks to new dogs, the Python community has not shied away from picking up new tricks from their new dog peers. Similar to the above mentioned formats, the emerging pyproject.toml format intends to be the single format across package management for Python. The format uses [TOML](https://toml.io/en/), a minimal and and more readable language for configuration files, making it more similar to Rust's Cargo.toml than JS's package.json.
 
-First suggested in [PEP 518](https://peps.python.org/pep-0518/) and expanded upon in subsequent PEPs, the case for pyproject.toml was primarily compelled by the desire to replace the aging setup.py manifest format used in packages as defined by setuptools and distutils before it. Beginning with [PEP 621](https://peps.python.org/pep-0621/), pyproject.toml has become the [standard format](https://packaging.python.org/en/latest/specifications/declaring-project-metadata/) for specifying a package's metadata and both [setuptools](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html) and [pip](https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/) now "speak" this format.
+First suggested in [PEP 518](https://peps.python.org/pep-0518/) and expanded upon in subsequent PEPs, the primary motivation for pyproject.toml was to replace the aging setup.py manifest format used in packages as defined by setuptools and distutils before it. Beginning with [PEP 621](https://peps.python.org/pep-0621/), pyproject.toml has become the [standard format](https://packaging.python.org/en/latest/specifications/declaring-project-metadata/) for specifying a package's metadata and both [setuptools](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html) and [pip](https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/) now "speak" this format.
 
 ## pyproject.toml for humans
 
@@ -83,100 +83,5 @@ Typically, we've handled this for Python projects by having 2 different requirem
 We generally use Docker for client-server scenarios, especially web. Bellow is an example of how we would handle separate images for dev and production and selectively installing dev dependencies:
 
 ```dockerfile:001-poetic-python-package-management/pipapp/Dockerfile
-# syntax=docker/dockerfile:1.4
-ARG APP_DIR=/app
-ARG HTTP_PORT=80
-
-# Alias our base image so we don't have to repeat the version number.
-FROM python:3.10.6-alpine3.16 AS python
-
-ENV \
-    # We'll let Dependabot keep our python base image up-to-date.
-    # This should ensure a pretty recent pip
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    # Don't warn about running pip as root.
-    PIP_ROOT_USER_ACTION=ignore \
-    # Don't buffer python output to stdout or stderr.
-    # We want to see what our app is doing live in case of a crash before the buffer gets flushed.
-    PYTHONUNBUFFERED=1
-
-
-FROM python AS app
-
-ARG APP_DIR
-ARG HTTP_PORT
-
-ENV \
-    HTTP_PORT=$HTTP_PORT \
-    BIND_ADDRESS=0.0.0.0:$HTTP_PORT
-
-WORKDIR /tmp
-
-# Install pip managed dependenices.
-COPY requirements/requirements.txt requirements.txt
-RUN apk add --no-cache --update --virtual build-dependencies \
-    # General build dependencies.
-    build-base \
-    # Build dependencies required by specific python packages.
-    postgresql-dev \
-    && \
-    # Install dependenices managed via pip.
-    pip install --no-cache --no-compile --no-input -r requirements.txt && \
-    # Remove build dependencies.
-    apk del --purge build-dependencies && \
-    rm requirements.txt
-
-RUN apk add --no-cache --update \
-    # Runtime dependencies.
-    libpq
-
-COPY ./src $APP_DIR/src/
-
-WORKDIR $APP_DIR/src
-
-EXPOSE $HTTP_PORT
-
-HEALTHCHECK --interval=60s --timeout=5s \
-        CMD wget --no-cache --spider http://$BIND_ADDRESS/health-check
-
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 4 \
-           main:app
-
-
-FROM app AS devapp
-
-ENV \
-    # Prevent python from writing bytecode during development.
-    PYTHONDONTWRITEBYTECODE=1
-
-# Install pip managed DEV dependenices.
-COPY requirements/requirements.dev.txt requirements.txt
-RUN apk add --no-cache --update --virtual build-dependencies \
-    # General build dependencies.
-    build-base \
-    && \
-    pip install --no-cache --no-compile --no-input -r requirements.txt && \
-    # Remove build dependencies.
-    apk del --purge build-dependencies && \
-    rm requirements.txt
-
-WORKDIR $APP_DIR/src
-
-# Override our entrypoint with more appropriate settings for development.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 1 \
-           --log-level debug \
-           --reload \
-           main:app
-
 ```
 ## Beyond
