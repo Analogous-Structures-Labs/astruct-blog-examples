@@ -17,7 +17,7 @@ jobs:
 
       - uses: analogous-structures-labs/markdown-embed-code@fix
         with:
-          markdown: "001-poetic-python-package-management"
+          markdown: "**/*.md"
           token: ${{ secrets.GITHUB_TOKEN }}
           message: "Embed code snippets."
           silent: true
