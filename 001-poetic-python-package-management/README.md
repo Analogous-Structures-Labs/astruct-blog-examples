@@ -49,11 +49,20 @@ First suggested in [PEP 518](https://peps.python.org/pep-0518/) and expanded upo
 
 ## pyproject.toml for humans
 
-Just as other language ecosystems have discovered, treating every project as a package greatly simplifies package management. Multiple package managers have come along to replace pip and requirements.txt with tooling around the pyproject.toml format, although they typically use pip under the hood, at least for now.
+Just as other language ecosystems have discovered, treating every project as a package greatly simplifies package management. Multiple package managers have come along to replace pip and requirements.txt with tooling around the pyproject.toml format, although they typically use pip under the hood, at least for now (alphabetical order, not a reflection of any):
 
-Namely, [Poetry](https://python-poetry.org/), [pip-tools](https://github.com/jazzband/pip-tools/), [PDM](https://pdm.fming.dev/), and more recently [Hatch](https://hatch.pypa.io/) have come along as pyproject.toml-based package managers that can be used for development without necessitating distribution.
+- [Hatch](https://hatch.pypa.io/)
+- [PDM](https://pdm.fming.dev/)
+- [pip-tools](https://github.com/jazzband/pip-tools/)
+- [Poetry](https://python-poetry.org/)
+- [pyflow](https://github.com/David-OConnor/pyflow)
 
-It remains unclear whether one will become the de facto package manager or whether they will continue to coexist with the standard format making it easy to choose your preference and move between them as desired. Poetry has a clear lead based on GitHub stars, ~22k vs ~3k for each of the others as of this writing, and other measurable activity. Hatch, while a more recent entrant into the conversation, might have an eventual advantage as a result of being a project under the [Python Packaging Authority](https://www.pypa.io/). We're keeping an eye on all the players.
+It remains unclear whether one will become the de facto package manager or whether they will continue to coexist. The standard format should make coexistence easier, with teamwith the standard format making it easy to choose your preference and move between them as desired. Poetry has a clear lead based on GitHub stars, ~22k vs ~1-3k for each of the others, as of this writing, and other visible activity. Hatch is a bit of a resurrected project, technically starting development in 2017 but hitting its 1.0 release only this past April. It might have an eventual advantage as a result of being a project under the [Python Packaging Authority](https://www.pypa.io/). We ourselves are keeping an eye on all the players as they evolve and add new features.
+pypa.io/).
+
+
+recent entry in to the space have come along as pyproject.toml-based package managers that can be used for development without necessitating distribution.
+
 
 It's worth mentioning [Pipenv](https://pipenv.pypa.io/), another popular package management project also under the PyPa authority. Like the others, it uses TOML but uses its [own specification](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock) and not the now standard pyproject.toml. As of this writing, its GitHub stars are comparable to Poetry's.
 
