@@ -82,7 +82,7 @@ We generally use Docker for client-server scenarios, especially web. Bellow is a
 
 Yes, we're using alpine base images and no we don't want to argue about it! We're aware of the lack of official pre-built wheels for alpine and other musl-based distributions and the additional hoops we have to jump through when using alpine. Hopefully, some hero comes along and champions the creation of musl wheels the way someone once did for glibc-based distros. We may cover this in a separate post and explain the what and why for those who aren't aware and cover some heroic projects looking to solve this.
 
-```dockerfile:001-poetic-python-package-management/pipapp/Dockerfile
+```Dockerfile:001-poetic-python-package-management/pipapp/Dockerfile
 # syntax=docker/dockerfile:1.4
 ARG APP_DIR=/app
 ARG HTTP_PORT=80
@@ -337,7 +337,7 @@ RUN apk add --no-cache --update --virtual build-dependencies \
 
 Give us a chance to explain. Yes we have to files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. Now, we could do this inline in our Dockerfile by running any of the following mostly equivalent commands:
 
-```python
+```sh
 pip install poetry
 pip install poetry==1.2.0
 curl -sSL https://install.python-poetry.org | python3 -
