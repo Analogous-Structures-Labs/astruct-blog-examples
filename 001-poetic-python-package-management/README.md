@@ -58,17 +58,12 @@ Just as other language ecosystems have discovered, treating every project as a p
 - [pyflow](https://github.com/David-OConnor/pyflow)
 
 It remains unclear whether one will become the de facto package manager or whether they will continue to coexist. The standard format should make coexistence easier, with teamwith the standard format making it easy to choose your preference and move between them as desired. Poetry has a clear lead based on GitHub stars, ~22k vs ~1-3k for each of the others, as of this writing, and other visible activity. Hatch is a bit of a resurrected project, technically starting development in 2017 but hitting its 1.0 release only this past April. It might have an eventual advantage as a result of being a project under the [Python Packaging Authority](https://www.pypa.io/). We ourselves are keeping an eye on all the players as they evolve and add new features.
-pypa.io/).
-
-
-recent entry in to the space have come along as pyproject.toml-based package managers that can be used for development without necessitating distribution.
-
 
 It's worth mentioning [Pipenv](https://pipenv.pypa.io/), another popular package management project also under the PyPa authority. Like the others, it uses TOML but uses its [own specification](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock) and not the now standard pyproject.toml. As of this writing, its GitHub stars are comparable to Poetry's.
 
-All of these tools provide the niceties common in modern package management including ease of dependency specification & installation, predictable deterministic builds recorded in a lock file, separation of core versus dev dependencies, support for virtual environments, and ease of package build & distribution.
+All of these tools provide the niceties common in modern package management including ease of dependency specification & installation, predictable deterministic builds recorded in a lock file, separation of core versus dev dependencies, support for virtual environments, and ease of package build & distribution. They're all create virtual environments by default so there is some configuration to do if you don't want / need a virtualenv, for example, withing a Docker container, as well as some gotchas.
 
-It's worth noting that pyproject.toml while now a standard is an evolving standard. At the moment, manifest files will look similar but not identical across these tools, looking more like "dialects" of a shared language. Moving between them shouldn't be too challenging but hopefully the dialects converge over time as the standard is further codified and more PEPs pop up.
+It's worth noting that pyproject.toml, while now a standard, is an evolving standard and is subject to change and some interpretation. At the moment, manifest files will look similar but not identical across these tools, looking more like "dialects" of a shared language. Moving between them shouldn't be too challenging but hopefully the dialects converge over time as the standard is further codified and more PEPs pop up.
 
 ## Choosing a package manager for our new projects
 
@@ -77,8 +72,8 @@ We knew for certain that we wanted to switch away from using pip and requirement
 We kept the decision simple and went with Poetry for a handful of arguably qualitative reasons:
 
 - Pipenv was out as we wanted to stick with a tool using the new pyproject.toml standard.
-- Poetry appears to be the most active / popular / mature of the other tools based on a number of metrics visible in its GitHub repo.
-- The roadmap targetting the 1.2.0 release of Poetry, now officially released, contained several compelling new features including optional dependency groups and finer grained control over dependency installation.
+- Poetry appears to be the most active / popular / mature of the other tools based activity visible inon GitHub.
+- The roadmap targetting the 1.2.0 release of Poetry, now officially released, contained several compelling new features including optional dependency groups and finer grained control over dependency installation. It could have easily warranted a major version increment.
 - Extensibility through their plugin architecture holds some interesting future potential.
 
 As mentioned before, a migration between tools shouldn't be a heavy lift given the same / similar manifest format. For that reason, we didn't feel like we were making an irreversible commitment and felt comfortable moving forward with Poetry.
@@ -92,100 +87,13 @@ Typically, we've handled this for Python projects by having 2 different requirem
 We generally use Docker for client-server scenarios, especially web. Bellow is an example of how we would handle separate images for dev and production and selectively installing dev dependencies:
 
 ```dockerfile:001-poetic-python-package-management/pipapp/Dockerfile
-# syntax=docker/dockerfile:1.4
-ARG APP_DIR=/app
-ARG HTTP_PORT=80
-
-# Alias our base image so we don't have to repeat the version number.
-FROM python:3.10.6-alpine3.16 AS python
-
-ENV \
-    # We'll let Dependabot keep our python base image up-to-date.
-    # This should ensure a pretty recent pip
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    # Don't warn about running pip as root.
-    PIP_ROOT_USER_ACTION=ignore \
-    # Don't buffer python output to stdout or stderr.
-    # We want to see what our app is doing live in case of a crash before the buffer gets flushed.
-    PYTHONUNBUFFERED=1
-
-
-FROM python AS app
-
-ARG APP_DIR
-ARG HTTP_PORT
-
-ENV \
-    HTTP_PORT=$HTTP_PORT \
-    BIND_ADDRESS=0.0.0.0:$HTTP_PORT
-
-WORKDIR /tmp
-
-# Install pip managed dependenices.
-COPY requirements/requirements.txt requirements.txt
-RUN apk add --no-cache --update --virtual build-dependencies \
-    # General build dependencies.
-    build-base \
-    # Build dependencies required by specific python packages.
-    postgresql-dev \
-    && \
-    # Install dependenices managed via pip.
-    pip install --no-cache --no-compile --no-input -r requirements.txt && \
-    # Remove build dependencies.
-    apk del --purge build-dependencies && \
-    rm requirements.txt
-
-RUN apk add --no-cache --update \
-    # Runtime dependencies.
-    libpq
-
-COPY ./src $APP_DIR/src/
-
-WORKDIR $APP_DIR/src
-
-EXPOSE $HTTP_PORT
-
-HEALTHCHECK --interval=60s --timeout=5s \
-        CMD wget --no-cache --spider http://$BIND_ADDRESS/health-check
-
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 4 \
-           main:app
-
-
-FROM app AS devapp
-
-ENV \
-    # Prevent python from writing bytecode during development.
-    PYTHONDONTWRITEBYTECODE=1
-
-# Install pip managed DEV dependenices.
-COPY requirements/requirements.dev.txt requirements.txt
-RUN apk add --no-cache --update --virtual build-dependencies \
-    # General build dependencies.
-    build-base \
-    && \
-    pip install --no-cache --no-compile --no-input -r requirements.txt && \
-    # Remove build dependencies.
-    apk del --purge build-dependencies && \
-    rm requirements.txt
-
-WORKDIR $APP_DIR/src
-
-# Override our entrypoint with more appropriate settings for development.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 1 \
-           --log-level debug \
-           --reload \
-           main:app
-
 ```
+
+```dockerfile:001-poetic-python-package-management/pipapp/Dockerfile [5]
+```
+
+```dockerfile:001-poetic-python-package-management/pipapp/Dockerfile[ 6 - 10 ]
+```
+
+
 ## Beyond
