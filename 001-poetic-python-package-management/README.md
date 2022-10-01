@@ -100,7 +100,12 @@ Now let's accomplish the same exact outcome using Poetry:
 ```dockerfile:001-poetic-python-package-management/poetryapp/Dockerfile
 ```
 
-Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a requirements.txt file. Give us a chance to explain. Yes we have to files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. Now, we could do this inline in our Dockerfile by running any of the following mostly equivalent commands:
+Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a requirements.txt file:
+
+```dockerfile:001-poetic-python-package-management/poetryapp/Dockerfile[32-44]
+```
+
+Give us a chance to explain. Yes we have to files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. Now, we could do this inline in our Dockerfile by running any of the following mostly equivalent commands:
 
 ```python
 pip install poetry
@@ -121,7 +126,15 @@ If we take a look at our pyproject.toml, we can instantly see some of the qualit
 ```toml:001-poetic-python-package-management/poetryapp/requirements/pyproject.toml
 ```
 
-We have more information about our project than requirements.txt allows. We have a clear separation between our universal dependencies and our dev dependencies. We can install them selectively using Poetry's [--with, --without, and --only](https://python-poetry.org/docs/cli/#install) command line options (new as of version 1.2.0). Easy to read. Easy to modify. Difficult to mess up.
+We have more information about our project than requirements.txt allows. We have a clear separation between our universal dependencies and our dev dependencies. We can install them selectively using Poetry's [--with, --without, and --only](https://python-poetry.org/docs/cli/#install) command line options (new as of version 1.2.0):
+
+```dockerfile:001-poetic-python-package-management/poetryapp/Dockerfile[54-54]
+```
+
+```dockerfile:001-poetic-python-package-management/poetryapp/Dockerfile[94-94]
+```
+
+Easy to read. Easy to modify. Difficult to mess up.
 
 Now, what did we really improve? We're jumping through some extra hoops. We have the same number of files. Was it worth it? You shouldn't have to mess with the hoops once you have everything working. Once Poetry, or one of the other new package managers, becomes official, these hoops will likely disappear into the lower-level base Python images. Or maybe the Poetry project will start maintaining Docker images with Poetry pre-installed to facilitate and encourage adoption. We'll let you decide whether it makes sense for your projects and provides you value or convenience. We're going to keep playing with it and keep an eye on how things develop.
 
