@@ -82,7 +82,7 @@ We generally use Docker for client-server scenarios, especially web. Bellow is a
 
 Yes, we're using alpine base images and no we don't want to argue about it! We're aware of the lack of official pre-built wheels for alpine and other musl-based distributions and the additional hoops we have to jump through when using alpine. Hopefully, some hero comes along and champions the creation of musl wheels the way someone once did for glibc-based distros. We may cover this in a separate post and explain the what and why for those who aren't aware and cover some heroic projects looking to solve this.
 
-```Dockerfile:001-poetic-python-package-management/pipapp/Dockerfile
+```dockerfile
 # syntax=docker/dockerfile:1.4
 ARG APP_DIR=/app
 ARG HTTP_PORT=80
