@@ -407,3 +407,5 @@ Now, what did we really improve? We're jumping through some extra hoops. We have
 Hopefully, this post made it easier for you to consider Poetry and give it a try.
 
 Until next time, keep trying new things.
+
+**All code referenced in this post can be found [here](https://github.com/Analogous-Structures-Labs/astruct-blog-examples/tree/blog/001-adding-article-content/001-poetic-python-package-management).**
