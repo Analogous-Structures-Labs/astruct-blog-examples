@@ -184,7 +184,7 @@ ENTRYPOINT hypercorn \
 As stated, we have 2 requirements files: one with our universal dependencies, installed in our `app` image, and a second with our dev dependencies. The second requirements file is installed only in our `devapp` image which derives from `app`, installs the additional dependencies, and then runs a slightly altered entrypoint that enables debug output and live reloading. Nothing wrong with this approach. It works and if you're working with Python and Docker, you've probably seen this pattern before.
 
 Universal requirements:
-```sh 001-poetic-python-package-management/pipapp/requirements/requirements.txt
+```ini 001-poetic-python-package-management/pipapp/requirements/requirements.txt
 # Keep alphabetized.
 fastapi==0.82.1
 hypercorn==0.14.3
@@ -194,7 +194,7 @@ uvloop==0.16.0
 ```
 
 Dev requirements:
-```sh 001-poetic-python-package-management/pipapp/requirements/requirements.dev.txt
+```ini 001-poetic-python-package-management/pipapp/requirements/requirements.dev.txt
 # Keep alphabetized.
 isort==5.10.1
 mypy==0.971
@@ -336,7 +336,7 @@ RUN apk add --no-cache --update --virtual build-dependencies \
 
 Give us a chance to explain. Yes we have to files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. Now, we could do this inline in our Dockerfile by running any of the following mostly equivalent commands:
 
-```console
+```sh
 pip install poetry
 pip install poetry==1.2.0
 curl -sSL https://install.python-poetry.org | python3 -
@@ -347,7 +347,7 @@ The 4th option is arguably the best of the bunch and better than our approach as
 
 So why do we install Poetry via a separate requirements.txt file? We do it so that [Dependabot](https://github.com/dependabot) can keep our version of Poetry up-to-date. If you're unfamiliar with Dependabot, it's a... bot that monitors your project's dependencies, checks for updated versions on the corresponding package indexes, and updates the dependency in a branches / pull request. You can either manually review the PR or if you have a good CI setup with good tests, your CI will tell you whether the update can be safely merged in. It can monitor [many different languages and package managers](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/about-dependabot-version-updates) including Pip, Poetry's flavor of pyproject.toml (another point for Poetry), Pipenv, and even Dockerfiles. We use it in our projects to monitor everything we possibly can. While it can monitor Python dependencies and Dockerfiles, it won't monitor Python dependencies specified inline in a Dockerfile, even if you specify a pinned version. For that reason, we maintain a requirements.txt file that installs Poetry and only Poetry.
 
-```sh 001-poetic-python-package-management/poetryapp/requirements/requirements.txt
+```ini 001-poetic-python-package-management/poetryapp/requirements/requirements.txt
 # This file only exists to install packages needed to bootstrap before handing things off to poetry.
 # All other packages should be added to pyproject.toml in this same directory.
 # Keep alphabetized.
