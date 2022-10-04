@@ -1,6 +1,6 @@
-# Introduction and first topic: Trying Poetry
+# An Introduction to Analogous Structures Labs and first topic: Trying Poetry
 
-Hello, random internet stranger. Welcome to our blog. We created this blog as a place to jot down random ideas encountered while working on our projects, generalized and simplified for easy consumption. In most cases, these ideas have come up while working with tools that are new to us or new features of tools we have used before. In some cases, we weren't able to find clear examples that answered our questions so we created our own and are sharing them here.
+Hello, random internet stranger. Welcome to the blog of Analogous Structures Labs. We created this blog as a place to jot down random ideas encountered while working on our various projects, generalized and simplified for easy consumption. In most cases, these ideas have come up while working with tools that are new to us or new features of tools we have used before. In some cases, we weren't able to find clear examples that answered our questions so we created our own solutions and are sharing them here.
 
 We anticipate that some posts will build on previous ones and we'll try to point out when they do. Code for all the examples will be available in a public GitHub repo which we'll link in the post. Feel free to engage, comment, ask questions, hurl insults, etc. We're not married nor religious about any of these ideas nor any of the examples. They at best proofs of concept, experiments.
 
@@ -10,7 +10,7 @@ On with the show.
 
 ## Python projects
 
-Python is probably the scripting language we used the most. It's a tried-and-true language with an active community and a robust ecosystem of libraries, tools, and packages across many domains. Many of our examples will build upon a toy project written in Python but the ideas will likely be applicable in other ecosystems.
+Python is probably the scripting language we use the most. It's a tried-and-true language with an active community and a robust ecosystem of libraries, tools, and packages across many domains. Many of our examples will build upon a toy project written in Python but the ideas will likely be applicable in other ecosystems.
 
 ## Python package management
 
