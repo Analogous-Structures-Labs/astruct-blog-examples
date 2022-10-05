@@ -319,6 +319,19 @@ ENTRYPOINT hypercorn \
 Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a requirements.txt file:
 
 ```dockerfile 001-poetic-python-package-management/poetryapp/Dockerfile[32-44]
+# Install pip managed dependenices.
+COPY requirements/requirements.txt requirements.txt
+RUN apk add --no-cache --update --virtual build-dependencies \
+    # General build dependencies.
+    build-base \
+    && \
+    # Install dependenices managed via pip.
+    pip install --no-cache --no-compile --no-input -r requirements.txt && \
+    # Remove build dependencies.
+    apk del --purge build-dependencies && \
+    rm requirements.txt && \
+    # Configure poetry.
+    poetry config virtualenvs.create false
 ```
 
 Give us a chance to explain. Yes we have to files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. Now, we could do this inline in our Dockerfile by running any of the following mostly equivalent commands:
