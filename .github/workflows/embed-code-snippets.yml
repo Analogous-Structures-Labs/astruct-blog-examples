@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
 
-      - uses: analogous-structures-labs/markdown-embed-code@main
+      - uses: analogous-structures-labs/markdown-embed-code@feature/use-gitpython
         with:
           markdown: "**/*.md"
           message: "Embed code snippets into markdown."
