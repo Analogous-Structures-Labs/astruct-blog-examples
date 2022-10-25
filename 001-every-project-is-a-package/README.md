@@ -4,7 +4,8 @@
 
 [pip](https://pip.pypa.io/en/stable/), the Package Installer for Python, has been the de facto Python package management tool for the last decade. With it came the simple [requirements.txt](https://pip.pypa.io/en/stable/reference/requirements-file-format/) file format for specifying a project's dependencies, making it easier to define and install all of a project's Python dependencies. Some of us are ancient enough to remember the "before time," when we used easy_install and other far less convenient methods to install and manage Python dependencies for our projects.
 
-<< ADD EXAMPLE >>
+```ini 001-every-project-is-a-package/manifest-examples/requirements.txt
+```
 
 pip has been a huge quality-of-life improvement and it still gets the job done a decade later. But pip and, more importantly the `requirements.txt` format, are relatively limited when stacked up against other modern language ecosystems and their respective package managers. Let's see why.
 
@@ -23,7 +24,11 @@ Language ecosystems that have come of age more recently have had the benefit of 
 
 A common pattern with these new kids on the block is combining both aspects of package management into a single tool and file format, a manifest that contains all of the metadata relevant to your project for build and distribution, dependencies included. This greatly simplifies package management. [Cargo.toml](https://doc.rust-lang.org/cargo/reference/manifest.html) used by Cargo for Rust and [package.json](https://docs.npmjs.com/cli/v8/configuring-npm/package-json) used by NPM and Yarn for JavaScript / TypeScript are two examples of combined manifest file.
 
-<< ADD EXAMPLES >>
+```toml /Users/randy/Developer/astruct-blog-examples/001-every-project-is-a-package/manifest-examples/Cargo.toml
+```
+
+```json /Users/randy/Developer/astruct-blog-examples/001-every-project-is-a-package/manifest-examples/package.json
+```
 
 These formats are used even if your project will never be distributed as a package. They solve for packaging but also package management while building. Every project becomes a package, whether distributed or not.
 
@@ -43,11 +48,26 @@ Just as other language ecosystems have discovered, treating every project as a p
 - [Poetry](https://python-poetry.org/)
 - [PyFlow](https://github.com/David-OConnor/pyflow)
 
-<< ADD EXAMPLES >>
+```toml /Users/randy/Developer/astruct-blog-examples/001-every-project-is-a-package/manifest-examples/pyproject.toml
+```
+
+```toml /Users/randy/Developer/astruct-blog-examples/001-every-project-is-a-package/manifest-examples/flit.pyproject.toml
+```
+
+```toml /Users/randy/Developer/astruct-blog-examples/001-every-project-is-a-package/manifest-examples/hatch.pyproject.toml
+```
+
+```toml /Users/randy/Developer/astruct-blog-examples/001-every-project-is-a-package/manifest-examples/poetry.pyproject.toml
+```
+
+```toml /Users/randy/Developer/astruct-blog-examples/001-every-project-is-a-package/manifest-examples/pyflow.pyproject.toml
+```
+
+It's worth noting that `pyproject.toml`, while now a standard, is an evolving standard and is subject to change and some interpretation. At the moment, manifest files will look similar but not identical across these tools, looking more like "dialects" of a shared language, some looking closer than others. Moving between them shouldn't be too challenging but hopefully the dialects converge over time as the standard is further codified and more PEPs pop up. The main building blocks are fairly consistent across.
 
 It remains unclear whether one will become the de facto package manager or whether they will continue to coexist as NPM and Yarn continue to do. The standard manifest format should make coexistence easier, with the standard format making it easy to choose your preference and move between them as desired. Poetry has a clear lead based on GitHub stars, ~22k vs ~1to 3k for each of the others, as of this writing, and other visible activity.
 
-<< HATCH AND FLIT>>
+<< HATCH AND FLIT PYPA >>
 Hatch is a resurrected project, technically starting development in 2017 but hitting its 1.0 release only this past April. It might have an eventual advantage as a result of being a project under the [Python Packaging Authority](https://www.pypa.io/)'s umbrella. We're keeping an eye on all the players as they evolve and add new features.
 
 There are a few other tools worth mentioning:
@@ -59,11 +79,10 @@ pip-tools provides a set of command line tools for compiling your `requirements.
 
  Pipenv, also under PyPa's umbrella uses TOML but uses its [own specification](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock) rather than the now standard pyproject.toml, at least not yet. As of this writing, its GitHub stars rival hose of Poetry. NOT FOCUSED ON DISTRIBUTION
 
-<< ADD EXAMPLE >>
+```toml /Users/randy/Developer/astruct-blog-examples/001-every-project-is-a-package/manifest-examples/Pipfile
+```
 
 All of these tools provide the quality-of-life features common to other modern package management including ease of dependency specification & installation, predictable deterministic builds recorded in a lock file, separation of core versus dev dependencies, support for [virtual environments](https://docs.python.org/3/library/venv.html), and ease of package build & distribution. They all create virtual environments by default so there is some configuration to do if you don't want / need one, though you may run into some unexpected pitfalls when circumventing the de-facto virtual environment. If you're already using something like [Docker](https://www.docker.com/) for application development and deployment, there's arguably no reason to isolate your project further within a virtual environment as you'd already be isolating it within a container. If you're not using Docker or some other form of containerization, we couldn't more emphatically recommend giving some consideration.
-
-It's worth noting that `pyproject.toml`, while now a standard, is an evolving standard and is subject to change and some interpretation. At the moment, manifest files will look similar but not identical across these tools, looking more like "dialects" of a shared language. Moving between them shouldn't be too challenging but hopefully the dialects converge over time as the standard is further codified and more PEPs pop up. The main building blocks are fairly consistent across.
 
 ## Choosing a package manager for our new projects
 
