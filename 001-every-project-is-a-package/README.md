@@ -1,8 +1,8 @@
 ## Python package management
 
-[Python](https://www.python.org/) is the scripting language we use the most in our projects. It's a tried-and-true language with an active community and a robust ecosystem of libraries, tools, and packages across innumerable domains. While we'll use Python in many of our examples, in most cases the ideas will likely be applicable in other contexts.
+[Python](https://www.python.org/) is the scripting language we use the most in our projects. It's a tried-and-true language with an active community and a robust ecosystem of libraries, tools, and packages across innumerable domains. While we'll use Python in many of our examples, in many cases some of the ideas could be useful in other contexts.
 
-[pip](https://pip.pypa.io/en/stable/), the Package Installer for Python, has been the de facto Python package management tool for the last decade. With it came the simple [requirements.txt](https://pip.pypa.io/en/stable/reference/requirements-file-format/) file format for specifying a project's dependencies, making it easier to define and install all of a project's Python dependencies. Some of us are ancient enough to remember the "before time," when we used easy_install and other far less convenient methods to install and manage Python dependencies for our projects.
+[pip](https://pip.pypa.io/en/stable/), the Package Installer for Python, has been the de facto Python package management tool for the last decade. With it came the simple [requirements.txt](https://pip.pypa.io/en/stable/reference/requirements-file-format/) file format for specifying a project's dependencies, making it easier to ensure consistent development environments and builds for Python projects. Some of us are ancient enough to remember the "before time," when we used easy_install and other far less convenient methods to install and manage Python dependencies for our projects.
 
 ```ini 001-every-project-is-a-package/manifest-examples/requirements.txt
 # Simple requirements.txt.
@@ -15,23 +15,23 @@ pip has been a huge quality-of-life improvement and it still gets the job done a
 
 Taking a simplified view of package management, we can break up the responsibilities into 2 buckets, or 2 sides of the same coin:
 
-1. Reproducible Project building << >> Dependency management: making it easy to articulate which packages your project depends on and making it easy to install said dependencies.
-1. Package << publishing/distribution >>: making it easy to articulate details of what your project does and facilitating packaging it, making it ready for distribution either by publishing the package to an index like the ubiquitous [PyPI](https://pypi.org/) or via some other means. This relies on number 1 as pip will need to know your package's dependencies when someone attempts to install it.
+1. Consumption: allowing you to provide metadata describing how your project should be built, during development and for deployment. Most importantly, this includes articulating your project's package dependencies and making their installation straightforward.
+1. Distribution: allowing you to distribute your project by publishing it as a package to an index like the ubiquitous [PyPI](https://pypi.org/) or distributing it via some other means. This typically involves articulating additional metadata about your project such as name, description, and version.
 
-The majority of developers will interact often with dependency management for their project and less often with package distribution unless they're creating or contributing to open source projects. pip handles consumption of distributed packages and dependency specification in package but does not directly handle packaging and distribution responsibilities. `requirements.txt` only really handles the dependency management piece.
+The majority of developers will interact often with Number 1 for their project and less often with Number 2, unless they're creating or contributing to open source projects. pip handles consumption of distributed packages and installation of a package's dependencies but does not directly handle packaging and distribution responsibilities. `requirements.txt` only really handles the dependency articulation piece of the equation.
 
 ## Modern package management: Every project **is** a package.
 
-Language ecosystems that have come of age more recently have had the benefit of seeing what came before them, giving them some helpful insights. Some of these insights relate to package management and Python's history in that realm undoubtedly had some impact.
+Language ecosystems that have come of age more recently have had the benefit of seeing what came before them, giving them some helpful insights. Some of these insights relate to package management and Python's history in that area has undoubtedly had some impact.
 
-A common pattern with these new kids on the block is combining both aspects of package management into a single tool and file format, a manifest that contains all of the metadata relevant to your project for build and distribution, dependencies included. This greatly simplifies package management. [Cargo.toml](https://doc.rust-lang.org/cargo/reference/manifest.html) used by Cargo for Rust and [package.json](https://docs.npmjs.com/cli/v8/configuring-npm/package-json) used by NPM and Yarn for JavaScript / TypeScript are two examples of combined manifest file.
+A common pattern with these new kids on the block is combining both aspects of package management into a single tool and file format, a manifest that contains all of the metadata relevant to your project for build and distribution, dependencies included. This greatly simplifies package management. [Cargo.toml](https://doc.rust-lang.org/cargo/reference/manifest.html) used by Cargo for Rust (get it? cargo manifest?) and [package.json](https://docs.npmjs.com/cli/v8/configuring-npm/package-json) used by NPM and Yarn for JavaScript / TypeScript are two examples of combined manifest files in popular language ecosystems.
 
 ```toml 001-every-project-is-a-package/manifest-examples/Cargo.toml
 [package]
 authors = ["Randy J <randy@astruct.co>"]
 description = "Simple Rust manifest example."
 edition = "2021"
-name = "rust_example"
+name = "rust-example"
 version = "0.1.0"
 
 [dependencies]
@@ -58,17 +58,17 @@ rand = "0.8.5"
 }
 ```
 
-These formats are used even if your project will never be distributed as a package. They solve for packaging but also package management while building. Every project becomes a package, whether distributed or not.
+These file formats are used even if you never intend your project be distributed as a package. Every project becomes a package, whether distributed or not.
 
 ## Enter pyproject.toml
 
 Having taught many old tricks to new dogs, the Python community has not shied away from picking up new tricks from their new dog peers. Similar to the above-mentioned formats, the emerging `pyproject.toml` format intends to be the single format across package management for Python. The format uses [TOML](https://toml.io/en/), a minimal and and more readable language for configuration files, making it more similar to Rust's `Cargo.toml` than JS's `package.json`.
 
-First suggested in [PEP 518](https://peps.python.org/pep-0518/) and expanded upon in subsequent PEPs, the primary motivation for `pyproject.toml` was to replace the aging `setup.py` / `setup.cfg` manifest formats used in packages as defined by `setuptools` and `distutils` before it. Beginning with [PEP 621](https://peps.python.org/pep-0621/), `pyproject.toml` has become the [standard format](https://packaging.python.org/en/latest/specifications/declaring-project-metadata/) for specifying a package's metadata going forward and both [setuptools](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html) and [pip](https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/) now understand this format.
+First suggested in [PEP 518](https://peps.python.org/pep-0518/) and expanded upon in subsequent PEPs, the primary motivation for `pyproject.toml` was to replace the aging `setup.py` / `setup.cfg` manifest formats used for package distribution as defined by `setuptools` and `distutils` before it. Beginning with the adoption of [PEP 621](https://peps.python.org/pep-0621/), `pyproject.toml` has become the [standard format](https://packaging.python.org/en/latest/specifications/declaring-project-metadata/) for specifying a project's metadata going forward and both [setuptools](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html) and [pip](https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/) now "speak" this format.
 
 ## pyproject.toml for humans
 
-Just as other language ecosystems have discovered, treating every project as a package greatly simplifies package management. Multiple package managers have come along to make life easier with tooling around the `pyproject.toml` format, although they mostly use pip under the hood, at least for now. Some are more targeted towards those who distribute their packages. Below are some of the newer package managers that are `pyproject.toml` native, so to speak, in alphabetical order:
+Just as other language ecosystems have discovered, treating every project as a package greatly simplifies package management. Multiple package managers have come along to make life easier with, by either adding support for `pyproject.toml` or using it "natively" from day one. Most of them still use pip to some degree under the hood. Below are some of these newer package managers, in alphabetical order, along with example pyproject.toml files:
 
 - [Flit](https://github.com/pypa/flit)
 - [Hatch](https://hatch.pypa.io/)
@@ -151,21 +151,16 @@ version = "0.1.0"
 fastrandom = "0.1.0"
 ```
 
-It's worth noting that `pyproject.toml`, while now a standard, is an evolving standard and is subject to change and some interpretation. At the moment, manifest files will look similar but not identical across these tools, looking more like "dialects" of a shared language, some looking closer than others. Moving between them shouldn't be too challenging but hopefully the dialects converge over time as the standard is further codified and more PEPs pop up. The main building blocks are fairly consistent across.
+It's worth noting that `pyproject.toml`, while now a standard, is flexible and in flux. You'll notice the manifest files look similar, in some cases practically identical with the exception of specifying which tool and version should be used in the `build-system` section. But you'll notice some variation still within the specs of the standard, with files looking more like "dialects" of a shared language. Stull, migrating between them shouldn't be too challenging. The main building blocks are fairly consistent across.
 
-It remains unclear whether one will become the de facto package manager or whether they will continue to coexist as NPM and Yarn continue to do. The standard manifest format should make coexistence easier, with the standard format making it easy to choose your preference and move between them as desired. Poetry has a clear lead based on GitHub stars, ~22k vs ~1to 3k for each of the others, as of this writing, and other visible activity.
-
-<< HATCH AND FLIT PYPA >>
-Hatch is a resurrected project, technically starting development in 2017 but hitting its 1.0 release only this past April. It might have an eventual advantage as a result of being a project under the [Python Packaging Authority](https://www.pypa.io/)'s umbrella. We're keeping an eye on all the players as they evolve and add new features.
-
-There are a few other tools worth mentioning:
+There are a few other package managers worth mentioning:
 
 - [pip-tools](https://github.com/jazzband/pip-tools/)
 - [Pipenv](https://pipenv.pypa.io/)
 
-pip-tools provides a set of command line tools for compiling your `requirements.txt` file from other formats, including `pyproject.toml`. pip-tools essentially sticks with the old standard but uses it more as a simple lock file compiled from the new standard.
+pip-tools doesn't present itself as a package manager byt a collection of command line tools. It allows you to compile your `requirements.txt` file from other formats, including `pyproject.toml`. pip-tools sticks with the old standard but uses it almost as a simple lock file compiled from the new standard.
 
-Pipenv, also under PyPa's umbrella uses TOML but uses its [own specification](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock) rather than the now standard pyproject.toml, at least not yet. As of this writing, its GitHub stars rival hose of Poetry. NOT FOCUSED ON DISTRIBUTION
+Pipenv uses TOML but uses its own specification, the [Pipfile](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock), rather than the now standard pyproject.toml. It's important to note that while Pipenv brings a lot of the same benefits as the above tools with respect to package management but it doesn't directly provide any distribution functionality:
 
 ```toml 001-every-project-is-a-package/manifest-examples/Pipfile
 [[source]]
@@ -180,18 +175,20 @@ fastrandom = "0.1.0"
 python_version = "3.10"
 ```
 
-All of these tools provide the quality-of-life features common to other modern package management including ease of dependency specification & installation, predictable deterministic builds recorded in a lock file, separation of core versus dev dependencies, support for [virtual environments](https://docs.python.org/3/library/venv.html), and ease of package build & distribution. They all create virtual environments by default so there is some configuration to do if you don't want / need one, though you may run into some unexpected pitfalls when circumventing the de-facto virtual environment. If you're already using something like [Docker](https://www.docker.com/) for application development and deployment, there's arguably no reason to isolate your project further within a virtual environment as you'd already be isolating it within a container. If you're not using Docker or some other form of containerization, we couldn't more emphatically recommend giving some consideration.
+Some of these package managers are clearly more targeted towards distribution than others. It remains unclear whether one will become the de facto package manager for the rest of us or whether they will continue to coexist as NPM and Yarn continue to do. The standard manifest format should make coexistence easier. Some of the projects may have an edge as a result of falling under the umbrella of the [Python Packaging Authority](https://www.pypa.io/)'s, namely Flit, Hatch, and Pipenv.
+
+As of this writing, Poetry has a clear lead among the `pyproject.toml` tools based on GitHub stars and development activity, ~22k stars vs ~1 to 6k for the others, rivaled only by Pipenv.
 
 ## Choosing a package manager for our new projects
 
-We knew for certain that we wanted to switch away from using pip and `requirements.txt` directly for our projects going forward. Partly because we buy in to the "every project is a package" methodology. But, also for the purpose of trying new things. Existing comparisons and benchmarks are always helpful but, as these tools are evolving and in flux, this information becomes stale quickly. We kept the decision simple and went with Poetry for a handful reasons:
+We knew for certain that we wanted to switch away from using pip and `requirements.txt` directly for our projects going forward. Partly because we buy in to the "every project is a package" methodology. But, also for the purpose of trying new things. Existing comparisons and benchmarks are always helpful but, as these tools are evolving and in flux, this information becomes stale quickly. All of these tools provide similar quality-of-life features to each other and to other modern package managers. We kept the decision simple and went with Poetry for a handful reasons:
 
+- Pipenv doesn't yet use the new `pyproject.toml` standard so it wasn't on the table, as far as we're concerned.
 - Poetry appears to be the most "for humans" while many of the others appear more focused on those who actually distribute their packages.
-- Poetry appears to have the most momentum BLAH be the most active / popular / mature of the other tools based on activity visible on GitHub.
-- Pipenv doesn't yet use the new `pyproject.toml` standard.
-- Extensibility through their plugin architecture holds some interesting future potential.
-- The road map targeting the 1.2.0 release of Poetry, now officially released, contained several compelling new features including optional dependency groups.
+- Poetry appears to have the most activity or at least popularity.
+- Poetry's extensibility through its plugin architecture holds some interesting future potential.
+- The road map leading the 1.2.0 release of Poetry, now officially released, contained several compelling new features including optional dependency groups.
 
-fragmentation not bad
+As mentioned before, migrating between tools shouldn't be a heavy lift given the same / similar manifest format so this doesn't feel like an irreversible commitment. We'll be providing some Poetry-based examples in some subsequent posts and highlight any pitfalls and learnings that we encounter along the way.
 
-As mentioned before, a migration between tools shouldn't be a heavy lift given the same / similar manifest format. We didn't feel like we were making an lifetime commitment. We'll be providing some Poetry-based examples in some subsequent posts and highlight any pitfalls and learnings that we encounter along the way.
+**All code referenced in this post can be found [here](https://github.com/Analogous-Structures-Labs/astruct-blog-examples/tree/blog/001-every-project-is-a-package/).**

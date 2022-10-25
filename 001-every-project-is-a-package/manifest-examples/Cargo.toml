@@ -2,7 +2,7 @@
 authors = ["Randy J <randy@astruct.co>"]
 description = "Simple Rust manifest example."
 edition = "2021"
-name = "rust_example"
+name = "rust-example"
 version = "0.1.0"
 
 [dependencies]

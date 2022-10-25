@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@randy/package_json_example",
+  "name": "@randy/package-json-example",
   "description": "Simple JS manifest example.",
   "version": "0.1.0",
   "author": {
