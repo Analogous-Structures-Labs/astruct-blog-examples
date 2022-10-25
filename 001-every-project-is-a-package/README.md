@@ -41,7 +41,7 @@ rand = "0.8.5"
 ```json 001-every-project-is-a-package/manifest-examples/package.json
 {
   "private": true,
-  "name": "@randy/package_json_example",
+  "name": "@randy/package-json-example",
   "description": "Simple JS manifest example.",
   "version": "0.1.0",
   "author": {
