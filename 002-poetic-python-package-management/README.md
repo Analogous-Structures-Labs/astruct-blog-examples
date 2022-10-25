@@ -8,7 +8,7 @@ We generally use Docker for client-server scenarios, especially web. Bellow is a
 
 Yes, we're using alpine base images and no we don't want to argue about it! We're aware of the lack of official pre-built wheels for alpine and other musl-based distributions and the additional hoops we have to jump through when using alpine. Hopefully, some hero comes along and champions the creation of musl wheels the way someone once did for glibc-based distros. We may cover this in a separate post and explain the what and why for those who aren't aware and cover some heroic projects looking to solve this.
 
-```dockerfile 001-poetic-python-package-management/pipapp/Dockerfile
+```dockerfile 002-poetic-python-package-management/pipapp/Dockerfile
 # syntax=docker/dockerfile:1.4
 ARG APP_DIR=/app
 ARG HTTP_PORT=80
@@ -110,7 +110,7 @@ ENTRYPOINT hypercorn \
 As stated, we have 2 requirements files: one with our universal dependencies, installed in our `app` image, and a second with our dev dependencies. The second requirements file is installed only in our `devapp` image which derives from `app`, installs the additional dependencies, and then runs a slightly altered entrypoint that enables debug output and live reloading. Nothing wrong with this approach. It works and if you're working with Python and Docker, you've probably seen this pattern before.
 
 Universal requirements:
-```ini 001-poetic-python-package-management/pipapp/requirements/requirements.txt
+```ini 002-poetic-python-package-management/pipapp/requirements/requirements.txt
 # Keep alphabetized.
 fastapi==0.82.1
 hypercorn==0.14.3
@@ -120,7 +120,7 @@ uvloop==0.16.0
 ```
 
 Dev requirements:
-```ini 001-poetic-python-package-management/pipapp/requirements/requirements.dev.txt
+```ini 002-poetic-python-package-management/pipapp/requirements/requirements.dev.txt
 # Keep alphabetized.
 isort==5.10.1
 mypy==0.971
@@ -130,7 +130,7 @@ pytest==7.1.3
 
 Now let's accomplish the same exact outcome using Poetry:
 
-```dockerfile 001-poetic-python-package-management/poetryapp/Dockerfile
+```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile
 # syntax=docker/dockerfile:1.4
 ARG APP_DIR=/app
 ARG HTTP_PORT=80
@@ -244,7 +244,7 @@ ENTRYPOINT hypercorn \
 
 Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a requirements.txt file:
 
-```dockerfile 001-poetic-python-package-management/poetryapp/Dockerfile[32-44]
+```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile[32-44]
 # Install pip managed dependenices.
 COPY requirements/requirements.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
@@ -273,7 +273,7 @@ The 4th option is arguably the best of the bunch and better than our approach as
 
 So why do we install Poetry via a separate requirements.txt file? We do it so that [Dependabot](https://github.com/dependabot) can keep our version of Poetry up-to-date. If you're unfamiliar with Dependabot, it's a... bot that monitors your project's dependencies, checks for updated versions on the corresponding package indexes, and updates the dependency in a branches / pull request. You can either manually review the PR or if you have a good CI setup with good tests, your CI will tell you whether the update can be safely merged in. It can monitor [many different languages and package managers](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/about-dependabot-version-updates) including Pip, Poetry's flavor of pyproject.toml (another point for Poetry), Pipenv, and even Dockerfiles. We use it in our projects to monitor everything we possibly can. While it can monitor Python dependencies and Dockerfiles, it won't monitor Python dependencies specified inline in a Dockerfile, even if you specify a pinned version. For that reason, we maintain a requirements.txt file that installs Poetry and only Poetry.
 
-```ini 001-poetic-python-package-management/poetryapp/requirements/requirements.txt
+```ini 002-poetic-python-package-management/poetryapp/requirements/requirements.txt
 # This file only exists to install packages needed to bootstrap before handing things off to poetry.
 # All other packages should be added to pyproject.toml in this same directory.
 # Keep alphabetized.
@@ -284,7 +284,7 @@ If you aren't using Dependabot, you should really take a look at it. It's now in
 
 If we take a look at our pyproject.toml, we can instantly see some of the quality-of-life benefits:
 
-```toml 001-poetic-python-package-management/poetryapp/requirements/pyproject.toml
+```toml 002-poetic-python-package-management/poetryapp/requirements/pyproject.toml
 [tool.poetry]
 authors = [
     "Randy J <randy@astruct.co>",
@@ -318,11 +318,11 @@ pytest = "7.1.3"
 
 We have more information about our project than requirements.txt allows. We have a clear separation between our universal dependencies and our dev dependencies in one file. We can install them selectively using Poetry's [--with, --without, and --only](https://python-poetry.org/docs/cli/#install) command line options (new as of version 1.2.0):
 
-```dockerfile 001-poetic-python-package-management/poetryapp/Dockerfile[54-54]
+```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile[54-54]
     poetry install --no-cache --no-interaction --without dev && \
 ```
 
-```dockerfile 001-poetic-python-package-management/poetryapp/Dockerfile[94-94]
+```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile[94-94]
     poetry install --no-cache --no-interaction --only dev && \
 ```
 
@@ -334,4 +334,4 @@ Hopefully, this post made it easier for you to consider Poetry and give it a try
 
 Until next time, keep trying new things.
 
-**All code referenced in this post can be found [here](https://github.com/Analogous-Structures-Labs/astruct-blog-examples/tree/blog/001-adding-article-content/001-poetic-python-package-management).**
+**All code referenced in this post can be found [here](https://github.com/Analogous-Structures-Labs/astruct-blog-examples/tree/blog/002-adding-article-content/002-poetic-python-package-management).**
