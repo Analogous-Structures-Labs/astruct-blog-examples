@@ -5,6 +5,8 @@
 [pip](https://pip.pypa.io/en/stable/), the Package Installer for Python, has been the de facto Python package management tool for the last decade. With it came the simple [requirements.txt](https://pip.pypa.io/en/stable/reference/requirements-file-format/) file format for specifying a project's dependencies, making it easier to define and install all of a project's Python dependencies. Some of us are ancient enough to remember the "before time," when we used easy_install and other far less convenient methods to install and manage Python dependencies for our projects.
 
 ```ini 001-every-project-is-a-package/manifest-examples/requirements.txt
+# Simple requirements.txt.
+fastrandom==0.1.0
 ```
 
 pip has been a huge quality-of-life improvement and it still gets the job done a decade later. But pip and, more importantly the `requirements.txt` format, are relatively limited when stacked up against other modern language ecosystems and their respective package managers. Let's see why.
@@ -25,9 +27,35 @@ Language ecosystems that have come of age more recently have had the benefit of 
 A common pattern with these new kids on the block is combining both aspects of package management into a single tool and file format, a manifest that contains all of the metadata relevant to your project for build and distribution, dependencies included. This greatly simplifies package management. [Cargo.toml](https://doc.rust-lang.org/cargo/reference/manifest.html) used by Cargo for Rust and [package.json](https://docs.npmjs.com/cli/v8/configuring-npm/package-json) used by NPM and Yarn for JavaScript / TypeScript are two examples of combined manifest file.
 
 ```toml 001-every-project-is-a-package/manifest-examples/Cargo.toml
+[package]
+authors = ["Randy J <randy@astruct.co>"]
+description = "Simple Rust manifest example."
+edition = "2021"
+name = "rust_example"
+version = "0.1.0"
+
+[dependencies]
+rand = "0.8.5"
 ```
 
 ```json 001-every-project-is-a-package/manifest-examples/package.json
+{
+  "private": true,
+  "name": "@randy/package_json_example",
+  "description": "Simple JS manifest example.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Randy J",
+    "email": "randy@astruct.co"
+  },
+  "engines": {
+    "node": "17.0.0",
+    "npm": "8.0.0"
+  },
+  "dependencies": {
+    "random": "3.0.6"
+  }
+}
 ```
 
 These formats are used even if your project will never be distributed as a package. They solve for packaging but also package management while building. Every project becomes a package, whether distributed or not.
@@ -49,18 +77,78 @@ Just as other language ecosystems have discovered, treating every project as a p
 - [PyFlow](https://github.com/David-OConnor/pyflow)
 
 ```toml 001-every-project-is-a-package/manifest-examples/pyproject.toml
+[project]
+authors = [{name = "Randy J", email = "randy@astruct.co"}]
+description = "Simple manifest example."
+name = "pytproject-example"
+requires-python = "3.10"
+version = "0.1.0"
+
+dependencies = [
+    "fastrandom==0.1.0",
+]
 ```
 
 ```toml 001-every-project-is-a-package/manifest-examples/flit.pyproject.toml
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+authors = [{name = "Randy J", email = "randy@astruct.co"}]
+description = "Simple Flit manifest example."
+name = "flit-example"
+requires-python = "3.10"
+version = "0.1.0"
+
+dependencies = [
+    "fastrandom==0.1.0",
+]
 ```
 
 ```toml 001-every-project-is-a-package/manifest-examples/hatch.pyproject.toml
+[build-system]
+requires = ["hatchling>=1.11.0"]
+build-backend = "hatchling.build"
+
+[project]
+authors = [{name = "Randy J", email = "randy@astruct.co"}]
+description = "Simple Hatch manifest example."
+name = "hatch-example"
+requires-python = "3.10"
+version = "0.1.0"
+
+dependencies = [
+    "fastrandom==0.1.0",
+]
 ```
 
 ```toml 001-every-project-is-a-package/manifest-examples/poetry.pyproject.toml
+[tool.poetry]
+authors = ["Randy J <randy@astruct.co>",]
+description = "Simple Poetry manifest example."
+name = "poetry-example"
+version = "0.1.0"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool.poetry.dependencies]
+fastrandom = "0.1.0"
+python = "^3.10"
 ```
 
 ```toml 001-every-project-is-a-package/manifest-examples/pyflow.pyproject.toml
+[tool.pyflow]
+authors = ["Randy J <randy@astruct.co>"]
+description = "Simple PyFlow manifest example."
+name = "pyflow-example"
+py_version = "3.10"
+version = "0.1.0"
+
+[tool.pyflow.dependencies]
+fastrandom = "0.1.0"
 ```
 
 It's worth noting that `pyproject.toml`, while now a standard, is an evolving standard and is subject to change and some interpretation. At the moment, manifest files will look similar but not identical across these tools, looking more like "dialects" of a shared language, some looking closer than others. Moving between them shouldn't be too challenging but hopefully the dialects converge over time as the standard is further codified and more PEPs pop up. The main building blocks are fairly consistent across.
@@ -77,9 +165,19 @@ There are a few other tools worth mentioning:
 
 pip-tools provides a set of command line tools for compiling your `requirements.txt` file from other formats, including `pyproject.toml`. pip-tools essentially sticks with the old standard but uses it more as a simple lock file compiled from the new standard.
 
- Pipenv, also under PyPa's umbrella uses TOML but uses its [own specification](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock) rather than the now standard pyproject.toml, at least not yet. As of this writing, its GitHub stars rival hose of Poetry. NOT FOCUSED ON DISTRIBUTION
+Pipenv, also under PyPa's umbrella uses TOML but uses its [own specification](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock) rather than the now standard pyproject.toml, at least not yet. As of this writing, its GitHub stars rival hose of Poetry. NOT FOCUSED ON DISTRIBUTION
 
 ```toml 001-every-project-is-a-package/manifest-examples/Pipfile
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+fastrandom = "0.1.0"
+
+[requires]
+python_version = "3.10"
 ```
 
 All of these tools provide the quality-of-life features common to other modern package management including ease of dependency specification & installation, predictable deterministic builds recorded in a lock file, separation of core versus dev dependencies, support for [virtual environments](https://docs.python.org/3/library/venv.html), and ease of package build & distribution. They all create virtual environments by default so there is some configuration to do if you don't want / need one, though you may run into some unexpected pitfalls when circumventing the de-facto virtual environment. If you're already using something like [Docker](https://www.docker.com/) for application development and deployment, there's arguably no reason to isolate your project further within a virtual environment as you'd already be isolating it within a container. If you're not using Docker or some other form of containerization, we couldn't more emphatically recommend giving some consideration.
@@ -93,7 +191,6 @@ We knew for certain that we wanted to switch away from using pip and `requiremen
 - Pipenv doesn't yet use the new `pyproject.toml` standard.
 - Extensibility through their plugin architecture holds some interesting future potential.
 - The road map targeting the 1.2.0 release of Poetry, now officially released, contained several compelling new features including optional dependency groups.
-
 
 fragmentation not bad
 
