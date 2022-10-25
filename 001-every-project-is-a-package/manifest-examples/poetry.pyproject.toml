@@ -1,0 +1,13 @@
+[tool.poetry]
+authors = ["Randy J <randy@astruct.co>",]
+description = "Simple Poetry manifest example."
+name = "poetry-example"
+version = "0.1.0"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool.poetry.dependencies]
+fastrandom = "0.1.0"
+python = "^3.10"
