@@ -12,8 +12,8 @@ pip has been a huge quality-of-life improvement and it still gets the job done a
 
 Taking a simplified view of package management, we can break up the responsibilities into 2 buckets, or 2 sides of the same coin:
 
-1. Dependency management: making it easy to articulate which packages your project depends on and making it easy to install said dependencies.
-1. Package distribution: making it easy to articulate details of what your project does and facilitating packaging it, making it ready for distribution either by publishing the package to an index like the ubiquitous [PyPI](https://pypi.org/) or via some other means. This relies on number 1 as pip will need to know your package's dependencies when someone attempts to install it.
+1. Reproducible Project building << >> Dependency management: making it easy to articulate which packages your project depends on and making it easy to install said dependencies.
+1. Package << publishing/distribution >>: making it easy to articulate details of what your project does and facilitating packaging it, making it ready for distribution either by publishing the package to an index like the ubiquitous [PyPI](https://pypi.org/) or via some other means. This relies on number 1 as pip will need to know your package's dependencies when someone attempts to install it.
 
 The majority of developers will interact often with dependency management for their project and less often with package distribution unless they're creating or contributing to open source projects. pip handles consumption of distributed packages and dependency specification in package but does not directly handle packaging and distribution responsibilities. `requirements.txt` only really handles the dependency management piece.
 
@@ -35,12 +35,11 @@ First suggested in [PEP 518](https://peps.python.org/pep-0518/) and expanded upo
 
 ## pyproject.toml for humans
 
-Just as other language ecosystems have discovered, treating every project as a package greatly simplifies package management. Multiple package managers have come along to replace pip and `requirements.txt` with tooling around the `pyproject.toml` format, although they generally use pip under the hood, at least for now. Below are newer package managers that are `pyproject.toml` native, so to speak (alphabetical order, not a reflection of any preference):
+Just as other language ecosystems have discovered, treating every project as a package greatly simplifies package management. Multiple package managers have come along to make life easier with tooling around the `pyproject.toml` format, although they mostly use pip under the hood, at least for now. Some are more targeted towards those who distribute their packages. Below are some of the newer package managers that are `pyproject.toml` native, so to speak, in alphabetical order:
 
 - [Flit](https://github.com/pypa/flit)
 - [Hatch](https://hatch.pypa.io/)
 - [PDM](https://pdm.fming.dev/)
-- [pip-tools](https://github.com/jazzband/pip-tools/)
 - [Poetry](https://python-poetry.org/)
 - [PyFlow](https://github.com/David-OConnor/pyflow)
 
@@ -48,9 +47,19 @@ Just as other language ecosystems have discovered, treating every project as a p
 
 It remains unclear whether one will become the de facto package manager or whether they will continue to coexist as NPM and Yarn continue to do. The standard manifest format should make coexistence easier, with the standard format making it easy to choose your preference and move between them as desired. Poetry has a clear lead based on GitHub stars, ~22k vs ~1to 3k for each of the others, as of this writing, and other visible activity.
 
-Hatch is a resurrected project, technically starting development in 2017 but hitting its 1.0 release only this past April. It might have an eventual advantage as a result of being a project under the [Python Packaging Authority](https://www.pypa.io/). We're keeping an eye on all the players as they evolve and add new features.
+<< HATCH AND FLIT>>
+Hatch is a resurrected project, technically starting development in 2017 but hitting its 1.0 release only this past April. It might have an eventual advantage as a result of being a project under the [Python Packaging Authority](https://www.pypa.io/)'s umbrella. We're keeping an eye on all the players as they evolve and add new features.
 
-It's worth mentioning [Pipenv](https://pipenv.pypa.io/), another popular package manager also under the PyPa authority. Like the others, it uses TOML but uses its [own specification](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock) and not the now standard pyproject.toml, at least not yet. As of this writing, its GitHub stars count is comparable to Poetry's.
+There are a few other tools worth mentioning:
+
+- [pip-tools](https://github.com/jazzband/pip-tools/)
+- [Pipenv](https://pipenv.pypa.io/)
+
+pip-tools provides a set of command line tools for compiling your `requirements.txt` file from other formats, including `pyproject.toml`. pip-tools essentially sticks with the old standard but uses it more as a simple lock file compiled from the new standard.
+
+ Pipenv, also under PyPa's umbrella uses TOML but uses its [own specification](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock) rather than the now standard pyproject.toml, at least not yet. As of this writing, its GitHub stars rival hose of Poetry. NOT FOCUSED ON DISTRIBUTION
+
+<< ADD EXAMPLE >>
 
 All of these tools provide the quality-of-life features common to other modern package management including ease of dependency specification & installation, predictable deterministic builds recorded in a lock file, separation of core versus dev dependencies, support for [virtual environments](https://docs.python.org/3/library/venv.html), and ease of package build & distribution. They all create virtual environments by default so there is some configuration to do if you don't want / need one, though you may run into some unexpected pitfalls when circumventing the de-facto virtual environment. If you're already using something like [Docker](https://www.docker.com/) for application development and deployment, there's arguably no reason to isolate your project further within a virtual environment as you'd already be isolating it within a container. If you're not using Docker or some other form of containerization, we couldn't more emphatically recommend giving some consideration.
 
@@ -60,9 +69,13 @@ It's worth noting that `pyproject.toml`, while now a standard, is an evolving st
 
 We knew for certain that we wanted to switch away from using pip and `requirements.txt` directly for our projects going forward. Partly because we buy in to the "every project is a package" methodology. But, also for the purpose of trying new things. Existing comparisons and benchmarks are always helpful but, as these tools are evolving and in flux, this information becomes stale quickly. We kept the decision simple and went with Poetry for a handful reasons:
 
+- Poetry appears to be the most "for humans" while many of the others appear more focused on those who actually distribute their packages.
+- Poetry appears to have the most momentum BLAH be the most active / popular / mature of the other tools based on activity visible on GitHub.
 - Pipenv doesn't yet use the new `pyproject.toml` standard.
-- Poetry appears to be the most active / popular / mature of the other tools based on activity visible on GitHub.
 - Extensibility through their plugin architecture holds some interesting future potential.
 - The road map targeting the 1.2.0 release of Poetry, now officially released, contained several compelling new features including optional dependency groups.
+
+
+fragmentation not bad
 
 As mentioned before, a migration between tools shouldn't be a heavy lift given the same / similar manifest format. We didn't feel like we were making an lifetime commitment. We'll be providing some Poetry-based examples in some subsequent posts and highlight any pitfalls and learnings that we encounter along the way.
