@@ -146,7 +146,7 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     apk del --purge build-dependencies
 ```
 
-Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a `requirements.txt` file. Give us a chance to explain. Yes we have 2 files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. We maintain a `requirements.txt` file that installs Poetry and only Poetry:
+Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have two files, one of them is still a `requirements.txt` file. Give us a chance to explain. Yes we have two files but the two files serve different purposes than our previous two files in the pip example. We have to install poetry. We maintain a `requirements.txt` file that installs Poetry and only Poetry:
 
 ```ini 002-poetic-python-package-management/poetryapp/requirements/requirements.txt
 # This file only exists to install packages needed to bootstrap before handing things off to poetry.
