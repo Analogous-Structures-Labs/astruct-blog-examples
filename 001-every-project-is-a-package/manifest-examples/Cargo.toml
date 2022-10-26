@@ -1,0 +1,9 @@
+[package]
+authors = ["Randy J <randy@astruct.co>"]
+description = "Simple Rust manifest example."
+edition = "2021"
+name = "rust-example"
+version = "0.1.0"
+
+[dependencies]
+rand = "0.8.5"

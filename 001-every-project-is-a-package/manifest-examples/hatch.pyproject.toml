@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling>=1.11.0"]
+build-backend = "hatchling.build"
+
+[project]
+authors = [{name = "Randy J", email = "randy@astruct.co"}]
+description = "Simple Hatch manifest example."
+name = "hatch-example"
+requires-python = "3.10"
+version = "0.1.0"
+
+dependencies = [
+    "fastrandom==0.1.0",
+]

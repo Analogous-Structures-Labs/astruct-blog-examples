@@ -1,0 +1,9 @@
+[tool.pyflow]
+authors = ["Randy J <randy@astruct.co>"]
+description = "Simple PyFlow manifest example."
+name = "pyflow-example"
+py_version = "3.10"
+version = "0.1.0"
+
+[tool.pyflow.dependencies]
+fastrandom = "0.1.0"

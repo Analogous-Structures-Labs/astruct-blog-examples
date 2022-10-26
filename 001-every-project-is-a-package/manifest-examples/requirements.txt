@@ -1,0 +1,2 @@
+# Simple requirements.txt.
+fastrandom==0.1.0

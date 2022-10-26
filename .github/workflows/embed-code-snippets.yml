@@ -1,0 +1,22 @@
+name: Fetch embedded code snippets in markdown files and embed them.
+
+on:
+  push:
+    branches:
+      - blog/*
+
+jobs:
+  embed-code-snippets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - uses: analogous-structures-labs/markdown-embed-code@main
+        with:
+          markdown: "**/*.md"
+          message: "Embed code snippets into markdown."
+          token: ${{ secrets.GITHUB_TOKEN }}

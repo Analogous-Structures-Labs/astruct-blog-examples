@@ -1,0 +1,14 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+authors = [{name = "Randy J", email = "randy@astruct.co"}]
+description = "Simple Flit manifest example."
+name = "flit-example"
+requires-python = "3.10"
+version = "0.1.0"
+
+dependencies = [
+    "fastrandom==0.1.0",
+]

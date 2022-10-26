@@ -29,7 +29,7 @@ ENV \
 
 WORKDIR /tmp
 
-# Install pip managed dependenices.
+# Install pip managed dependencies.
 COPY requirements/requirements.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
@@ -67,6 +67,8 @@ EXPOSE $HTTP_PORT
 HEALTHCHECK --interval=60s --timeout=5s \
         CMD wget --no-cache --spider http://$BIND_ADDRESS/health-check
 
+# In practice, we'd probably want to use the CMD form and / or a wrapper shell script to specify our
+# entrypoints and healthchecks. For the sake of simplicity and having fewer files, we're using the shell form.
 ENTRYPOINT hypercorn \
            --bind $BIND_ADDRESS \
            --access-logfile - \
