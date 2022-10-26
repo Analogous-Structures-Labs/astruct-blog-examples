@@ -6,7 +6,7 @@ In a [previous post](/001-every-project-is-a-package), we discussed the benefits
 
 One of the more common features of modern package managers, one that `requirements.txt` doesn't solve for, is installing dev dependencies only on environments where they're needed. Or, conversely, not installing dev dependencies in production. Typically, we've handled this for Python projects by having 2 different `requirements.txt` files: one with universal dependencies which are needed on all environments and a second with only our dev dependencies which we only want on dev environments where we're building, testing, debugging. Modern package managers, make this quite a bit cleaner.
 
-For this example, we'll be using [Docker](https://www.docker.com/) and [Dockerfiles](https://docs.docker.com/engine/reference/builder/). Don't worry if you're not familiar with Docker, most of the commands are just good, old-fashioned Linux commands and should look familiar if you've been working with Linux and Python. That said, if you're not using Docker or some form of containerization today, run don't walk to your [nearest Docker tutorial](https://docs.docker.com/get-started/).
+For this example, we'll be using [Docker](https://www.docker.com/) and [Dockerfiles](https://docs.docker.com/engine/reference/builder/). Don't worry if you're not familiar with Docker, most of the commands are just good, old-fashioned Linux commands and should look familiar if you've been working with Linux and Python. Hopefully, you'll be able to follow along. All that said, if you're not using Docker or some form of containerization today, run don't walk to your [nearest Docker tutorial](https://docs.docker.com/get-started/).
 
 Note: we're using alpine based images and no we don't want to argue about it! We're aware of the lack of official pre-built wheels for alpine and other non-glibc-based Linux distributions and the additional hoops we have to jump through when using alpine. We may cover this in a separate post and explain the what and why for those who aren't aware and cover some heroic projects looking to solve this. For now, let's not let that distract us from the subject at hand.
 
@@ -150,25 +150,7 @@ RUN apk add --no-cache --update --virtual build-dependencies \
 
 ```
 
-Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a `requirements.txt` file:
-
-```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [32-44]
-# Install pip managed dependencies.
-COPY requirements/requirements.txt requirements.txt
-RUN apk add --no-cache --update --virtual build-dependencies \
-    # General build dependencies.
-    build-base \
-    && \
-    # Install dependenices managed via pip.
-    pip install --no-cache --no-compile --no-input -r requirements.txt && \
-    # Remove build dependencies.
-    apk del --purge build-dependencies && \
-    rm requirements.txt && \
-    # Configure poetry.
-    poetry config virtualenvs.create false
-```
-
-Give us a chance to explain. Yes we have 2 files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. We maintain a `requirements.txt` file that installs Poetry and only Poetry:
+Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a `requirements.txt` file. Give us a chance to explain. Yes we have 2 files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. We maintain a `requirements.txt` file that installs Poetry and only Poetry:
 
 ```ini 002-poetic-python-package-management/poetryapp/requirements/requirements.txt
 # This file only exists to install packages needed to bootstrap before handing things off to poetry.
@@ -186,11 +168,11 @@ curl -sSL https://install.python-poetry.org | python3 -
 curl -sSL https://install.python-poetry.org | POETRY_PREVIEW=1.2.0 python3 -
 ```
 
-The 4th option is arguably the best of the bunch and better than our approach as its closer to how both Python and Pip are installed in the official images.
+The 4th option is arguably the best of the bunch and better than our approach as its closer to how both Python and pip are installed in the official Python Docker images.
 
 So why do we install Poetry via a separate `requirements.txt` file? We do it so that [Dependabot](https://github.com/dependabot) can keep our version of Poetry up-to-date. If you're unfamiliar with Dependabot, it's a... bot that monitors your project's dependencies, checks for updated versions on the corresponding package indexes, and updates the dependency in a branches / pull request. You can either manually review the PR or if you have a good CI setup with good tests, your CI will tell you whether the update can be safely merged in. It can monitor [many different languages and package managers](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/about-dependabot-version-updates) including pip, Poetry's flavor of `pyproject.toml` (another point for Poetry), `Pipfile`, and even `Dockerfile` dependencies. We use it in our projects to monitor everything we possibly can. While it can monitor Python and Docker dependencies, it can't monitor Python dependencies specified inline in a `Dockerfile`, even if you specify a pinned version. For that reason,  If you're not using Dependabot, run don't walk yada yada... It's now integrated into GitHub and free. We'll likely further sing its praises in future posts.
 
-If we take a look at our `pyproject.toml`, we can instantly see some of the quality-of-life benefits:
+Moving on. If we take a look at our `pyproject.toml`, we can instantly see some of the quality-of-life benefits:
 
 ```toml 002-poetic-python-package-management/poetryapp/requirements/pyproject.toml
 [tool.poetry]
@@ -224,7 +206,7 @@ pylint = "2.15.0"
 pytest = "7.1.3"
 ```
 
-We have more information about our project than `requirements.txt` allows. We have a clear separation between our universal dependencies and our dev dependencies in one file. We can install them selectively using Poetry's [--with, --without, and --only](https://python-poetry.org/docs/cli/#install) command line options (new as of version 1.2.0):
+Easy to read. Easy to modify. Difficult to mess up. We now have more information about our project than `requirements.txt` allows. We have a clear separation between our universal dependencies and our dev dependencies in one file. We can install them selectively using Poetry's [--with, --without, and --only](https://python-poetry.org/docs/cli/#install) command line options (new as of version 1.2.0):
 
 ```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [54]
     poetry install --no-cache --no-interaction --without dev && \
@@ -303,8 +285,6 @@ ENTRYPOINT hypercorn \
            --reload \
            main:app
 ```
-
-Easy to read. Easy to modify. Difficult to mess up.
 
 What did we really improve? We're jumping through some extra hoops. We have the same number of files. Was it worth it?
 
