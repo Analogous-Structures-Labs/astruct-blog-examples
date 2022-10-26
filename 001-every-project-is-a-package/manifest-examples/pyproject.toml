@@ -1,7 +1,7 @@
 [project]
 authors = [{name = "Randy J", email = "randy@astruct.co"}]
 description = "Simple manifest example."
-name = "pytproject-example"
+name = "pyproject-example"
 requires-python = "3.10"
 version = "0.1.0"
 
