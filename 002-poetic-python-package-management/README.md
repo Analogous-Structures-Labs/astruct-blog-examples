@@ -39,7 +39,6 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     # Remove build dependencies.
     apk del --purge build-dependencies && \
     rm requirements.txt
-
 ```
 
 Universal dependencies:
@@ -72,7 +71,6 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     # Remove build dependencies.
     apk del --purge build-dependencies && \
     rm requirements.txt
-
 ```
 
 Dev Dependencies:
@@ -127,7 +125,6 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     && \
     poetry install --no-cache --no-interaction --without dev && \
     apk del --purge build-dependencies
-
 ```
 
 ```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [81:97]
@@ -147,7 +144,6 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     poetry install --no-cache --no-interaction --only dev && \
     # Remove build dependencies.
     apk del --purge build-dependencies
-
 ```
 
 Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a `requirements.txt` file. Give us a chance to explain. Yes we have 2 files but the 2 files serve different purposes than our 2 files in the pip example. We have to install poetry. We maintain a `requirements.txt` file that installs Poetry and only Poetry:
@@ -210,80 +206,10 @@ Easy to read. Easy to modify. Difficult to mess up. We now have more information
 
 ```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [54]
     poetry install --no-cache --no-interaction --without dev && \
-    apk del --purge build-dependencies
-
-RUN apk add --no-cache --update \
-    # Runtime dependencies.
-    libpq
-
-COPY ./src $APP_DIR/src/
-
-WORKDIR $APP_DIR/src
-
-EXPOSE $HTTP_PORT
-
-HEALTHCHECK --interval=60s --timeout=5s \
-        CMD wget --no-cache --spider http://$BIND_ADDRESS/health-check
-
-# In practice, we'd probably want to use the CMD form and / or a wrapper shell script to specify our
-# entrypoints and healthchecks. For the sake of simplicity and having fewer files, we're using the shell form.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 4 \
-           main:app
-
-
-FROM app AS devapp
-
-ENV \
-    # Prevent python from writing bytecode during development.
-    PYTHONDONTWRITEBYTECODE=1
-
-WORKDIR /tmp
-
-# Install poetry DEV managed dependencies.
-RUN apk add --no-cache --update --virtual build-dependencies \
-    # General build dependencies.
-    build-base \
-    && \
-    poetry install --no-cache --no-interaction --only dev && \
-    # Remove build dependencies.
-    apk del --purge build-dependencies
-
-WORKDIR $APP_DIR/src
-
-# Override our entrypoint with more appropriate settings for development.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 1 \
-           --log-level debug \
-           --reload \
-           main:app
 ```
 
 ```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [94]
     poetry install --no-cache --no-interaction --only dev && \
-    # Remove build dependencies.
-    apk del --purge build-dependencies
-
-WORKDIR $APP_DIR/src
-
-# Override our entrypoint with more appropriate settings for development.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 1 \
-           --log-level debug \
-           --reload \
-           main:app
 ```
 
 What did we really improve? We're jumping through some extra hoops. We have the same number of files. Was it worth it?
