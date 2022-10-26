@@ -84,7 +84,7 @@ And here we have example `pyproject.toml` manifest files that are essentially eq
 [project]
 authors = [{name = "Randy J", email = "randy@astruct.co"}]
 description = "Simple manifest example."
-name = "pytproject-example"
+name = "pyproject-example"
 requires-python = "3.10"
 version = "0.1.0"
 
@@ -167,6 +167,7 @@ pip-tools doesn't present itself as a package manager but instead as a collectio
 Pipenv uses TOML but uses its own specification, the [Pipfile](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-pipfile-lock). It's important to note that while Pipenv brings a lot of the same benefits as the above tools with respect to package management, it doesn't directly provide any distribution related functionality:
 
 ```toml 001-every-project-is-a-package/manifest-examples/Pipfile
+# Simple Pipfile example.
 [[source]]
 name = "pypi"
 url = "https://pypi.org/simple"

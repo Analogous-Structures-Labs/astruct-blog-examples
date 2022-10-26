@@ -15,24 +15,6 @@ For the sake of brevity, we'll be including snippets our `Dockerfile` but we'll 
 Install our Universal Dependencies:
 
 ```dockerfile 002-poetic-python-package-management/pipapp/Dockerfile [19:43]
-# syntax=docker/dockerfile:1.4
-ARG APP_DIR=/app
-ARG HTTP_PORT=80
-
-# Alias our base image so we don't have to repeat the version number.
-FROM python:3.10.6-alpine3.16 AS python
-
-ENV \
-    # We'll let Dependabot keep our python base image up-to-date.
-    # This should ensure a pretty recent pip
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    # Don't warn about running pip as root.
-    PIP_ROOT_USER_ACTION=ignore \
-    # Don't buffer python output to stdout or stderr.
-    # We want to see what our app is doing live in case of a crash before the buffer gets flushed.
-    PYTHONUNBUFFERED=1
-
-
 FROM python AS app
 
 ARG APP_DIR
@@ -44,7 +26,7 @@ ENV \
 
 WORKDIR /tmp
 
-# Install pip managed dependenices.
+# Install pip managed dependencies.
 COPY requirements/requirements.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
@@ -52,65 +34,12 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     # Build dependencies required by specific python packages.
     postgresql-dev \
     && \
-    # Install dependenices managed via pip.
+    # Install dependencies managed via pip.
     pip install --no-cache --no-compile --no-input -r requirements.txt && \
     # Remove build dependencies.
     apk del --purge build-dependencies && \
     rm requirements.txt
 
-RUN apk add --no-cache --update \
-    # Runtime dependencies.
-    libpq
-
-COPY ./src $APP_DIR/src/
-
-WORKDIR $APP_DIR/src
-
-EXPOSE $HTTP_PORT
-
-HEALTHCHECK --interval=60s --timeout=5s \
-        CMD wget --no-cache --spider http://$BIND_ADDRESS/health-check
-
-# In practice, we'd probably want to use the CMD form and / or a wrapper shell script to specify our
-# entrypoints and healthchecks. For the sake of simplicity and having fewer files, we're using the shell form.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 4 \
-           main:app
-
-
-FROM app AS devapp
-
-ENV \
-    # Prevent python from writing bytecode during development.
-    PYTHONDONTWRITEBYTECODE=1
-
-# Install pip managed DEV dependenices.
-COPY requirements/requirements.dev.txt requirements.txt
-RUN apk add --no-cache --update --virtual build-dependencies \
-    # General build dependencies.
-    build-base \
-    && \
-    pip install --no-cache --no-compile --no-input -r requirements.txt && \
-    # Remove build dependencies.
-    apk del --purge build-dependencies && \
-    rm requirements.txt
-
-WORKDIR $APP_DIR/src
-
-# Override our entrypoint with more appropriate settings for development.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 1 \
-           --log-level debug \
-           --reload \
-           main:app
 ```
 
 Universal dependencies:
@@ -127,6 +56,23 @@ uvloop==0.16.0
 Install our Dev dependencies:
 
 ```dockerfile 002-poetic-python-package-management/pipapp/Dockerfile [68:84]
+FROM app AS devapp
+
+ENV \
+    # Prevent python from writing bytecode during development.
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install pip managed DEV dependencies.
+COPY requirements/requirements.dev.txt requirements.txt
+RUN apk add --no-cache --update --virtual build-dependencies \
+    # General build dependencies.
+    build-base \
+    && \
+    pip install --no-cache --no-compile --no-input -r requirements.txt && \
+    # Remove build dependencies.
+    apk del --purge build-dependencies && \
+    rm requirements.txt
+
 ```
 
 Dev Dependencies:
@@ -144,24 +90,6 @@ As mentioned previously, we have 2 requirements files: one with our universal de
 Now let's accomplish the same outcome using Poetry:
 
 ```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [19:56]
-# syntax=docker/dockerfile:1.4
-ARG APP_DIR=/app
-ARG HTTP_PORT=80
-
-# Alias our base image so we don't have to repeat the version number.
-FROM python:3.10.6-alpine3.16 AS python
-
-ENV \
-    # We'll let Dependabot keep our python base image up-to-date.
-    # This should ensure a pretty recent pip
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    # Don't warn about running pip as root.
-    PIP_ROOT_USER_ACTION=ignore \
-    # Don't buffer python output to stdout or stderr.
-    # We want to see what our app is doing live in case of a crash before the buffer gets flushed.
-    PYTHONUNBUFFERED=1
-
-
 FROM python AS app
 
 ARG APP_DIR
@@ -175,7 +103,7 @@ ENV \
 
 WORKDIR /tmp
 
-# Install pip managed dependenices.
+# Install pip managed dependencies.
 COPY requirements/requirements.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
@@ -200,30 +128,9 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     poetry install --no-cache --no-interaction --without dev && \
     apk del --purge build-dependencies
 
-RUN apk add --no-cache --update \
-    # Runtime dependencies.
-    libpq
+```
 
-COPY ./src $APP_DIR/src/
-
-WORKDIR $APP_DIR/src
-
-EXPOSE $HTTP_PORT
-
-HEALTHCHECK --interval=60s --timeout=5s \
-        CMD wget --no-cache --spider http://$BIND_ADDRESS/health-check
-
-# In practice, we'd probably want to use the CMD form and / or a wrapper shell script to specify our
-# entrypoints and healthchecks. For the sake of simplicity and having fewer files, we're using the shell form.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 4 \
-           main:app
-
-
+```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [81:97]
 FROM app AS devapp
 
 ENV \
@@ -241,27 +148,12 @@ RUN apk add --no-cache --update --virtual build-dependencies \
     # Remove build dependencies.
     apk del --purge build-dependencies
 
-WORKDIR $APP_DIR/src
-
-# Override our entrypoint with more appropriate settings for development.
-ENTRYPOINT hypercorn \
-           --bind $BIND_ADDRESS \
-           --access-logfile - \
-           --log-file - \
-           --worker-class uvloop \
-           --workers 1 \
-           --log-level debug \
-           --reload \
-           main:app
-```
-
-```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [81:97]
 ```
 
 Okay okay, I know what you're thinking. This is arguably worse. We're jumping through extra hoops. We have extra configuration steps and we still have 2 files and one of them is still a `requirements.txt` file:
 
 ```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [32-44]
-# Install pip managed dependenices.
+# Install pip managed dependencies.
 COPY requirements/requirements.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.
@@ -336,10 +228,80 @@ We have more information about our project than `requirements.txt` allows. We ha
 
 ```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [54]
     poetry install --no-cache --no-interaction --without dev && \
+    apk del --purge build-dependencies
+
+RUN apk add --no-cache --update \
+    # Runtime dependencies.
+    libpq
+
+COPY ./src $APP_DIR/src/
+
+WORKDIR $APP_DIR/src
+
+EXPOSE $HTTP_PORT
+
+HEALTHCHECK --interval=60s --timeout=5s \
+        CMD wget --no-cache --spider http://$BIND_ADDRESS/health-check
+
+# In practice, we'd probably want to use the CMD form and / or a wrapper shell script to specify our
+# entrypoints and healthchecks. For the sake of simplicity and having fewer files, we're using the shell form.
+ENTRYPOINT hypercorn \
+           --bind $BIND_ADDRESS \
+           --access-logfile - \
+           --log-file - \
+           --worker-class uvloop \
+           --workers 4 \
+           main:app
+
+
+FROM app AS devapp
+
+ENV \
+    # Prevent python from writing bytecode during development.
+    PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /tmp
+
+# Install poetry DEV managed dependencies.
+RUN apk add --no-cache --update --virtual build-dependencies \
+    # General build dependencies.
+    build-base \
+    && \
+    poetry install --no-cache --no-interaction --only dev && \
+    # Remove build dependencies.
+    apk del --purge build-dependencies
+
+WORKDIR $APP_DIR/src
+
+# Override our entrypoint with more appropriate settings for development.
+ENTRYPOINT hypercorn \
+           --bind $BIND_ADDRESS \
+           --access-logfile - \
+           --log-file - \
+           --worker-class uvloop \
+           --workers 1 \
+           --log-level debug \
+           --reload \
+           main:app
 ```
 
 ```dockerfile 002-poetic-python-package-management/poetryapp/Dockerfile [94]
     poetry install --no-cache --no-interaction --only dev && \
+    # Remove build dependencies.
+    apk del --purge build-dependencies
+
+WORKDIR $APP_DIR/src
+
+# Override our entrypoint with more appropriate settings for development.
+ENTRYPOINT hypercorn \
+           --bind $BIND_ADDRESS \
+           --access-logfile - \
+           --log-file - \
+           --worker-class uvloop \
+           --workers 1 \
+           --log-level debug \
+           --reload \
+           main:app
 ```
 
 Easy to read. Easy to modify. Difficult to mess up.
