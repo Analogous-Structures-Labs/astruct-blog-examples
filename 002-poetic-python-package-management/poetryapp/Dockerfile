@@ -29,7 +29,7 @@ ENV \
 
 WORKDIR /tmp
 
-# Install pip managed dependenices.
+# Install pip managed dependencies.
 COPY requirements/requirements.txt requirements.txt
 RUN apk add --no-cache --update --virtual build-dependencies \
     # General build dependencies.

@@ -70,13 +70,15 @@ First suggested in [PEP 518](https://peps.python.org/pep-0518/) and expanded upo
 
 Just as other language ecosystems have discovered, treating every project as a package greatly simplifies package management. Multiple package managers have come to the rescue by either adding support for `pyproject.toml` or using it "natively" from day one in the case of recent entrants. Most of them still use pip to some degree under the hood. Some of these package managers are more focused on distribution than others.
 
-Below are some of these package managers, in alphabetical order, along with example `pyproject.toml` manifest files:
+Below are some of these package managers, in alphabetical order:
 
 - [Flit](https://github.com/pypa/flit)
 - [Hatch](https://hatch.pypa.io/)
 - [PDM](https://pdm.fming.dev/)
 - [Poetry](https://python-poetry.org/)
 - [PyFlow](https://github.com/David-OConnor/pyflow)
+
+And here we have example `pyproject.toml` manifest files that are essentially equivalent across different package managers:
 
 ```toml 001-every-project-is-a-package/manifest-examples/pyproject.toml
 [project]
